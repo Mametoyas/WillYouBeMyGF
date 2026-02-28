@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>มีเรื่องจะถาม 🐱</title>
+<link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;600;700&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Kanit', sans-serif;
+    min-height: 100vh;
+    background: linear-gradient(135deg, #ffe0f0 0%, #ffd6f0 30%, #e8d5ff 70%, #d5eeff 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    position: relative;
+  }
+
+  /* Floating hearts background */
+  .hearts-bg {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    overflow: hidden;
+  }
+
+  .heart-float {
+    position: absolute;
+    bottom: -50px;
+    font-size: 1.5rem;
+    animation: floatUp linear infinite;
+    opacity: 0.5;
+  }
+
+  @keyframes floatUp {
+    0%   { transform: translateY(0) rotate(0deg); opacity: 0.6; }
+    100% { transform: translateY(-110vh) rotate(360deg); opacity: 0; }
+  }
+
+  /* Card */
+  .card {
+    background: rgba(255,255,255,0.75);
+    backdrop-filter: blur(20px);
+    border: 2px solid rgba(255,150,200,0.3);
+    border-radius: 32px;
+    padding: 56px 52px;
+    text-align: center;
+    max-width: 480px;
+    width: 90%;
+    min-height: 440px;
+    box-shadow: 0 20px 80px rgba(255,100,180,0.15), 0 4px 20px rgba(0,0,0,0.06);
+    position: relative;
+    z-index: 10;
+    animation: cardIn 0.8s cubic-bezier(0.34,1.56,0.64,1) both;
+    overflow: hidden;
+  }
+
+  @keyframes cardIn {
+    from { opacity: 0; transform: scale(0.7) translateY(40px); }
+    to   { opacity: 1; transform: scale(1) translateY(0); }
+  }
+
+  .cat {
+    font-size: 5rem;
+    display: block;
+    margin-bottom: 8px;
+    animation: bounce 2s ease-in-out infinite;
+    cursor: default;
+    user-select: none;
+  }
+
+  @keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    50%       { transform: translateY(-10px); }
+  }
+
+  .question {
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: #c0407a;
+    margin-bottom: 8px;
+    line-height: 1.35;
+  }
+
+  .sub {
+    font-size: 0.95rem;
+    color: #d080a0;
+    font-weight: 300;
+    margin-bottom: 40px;
+  }
+
+  /* Buttons */
+  .btn-group {
+    display: flex;
+    gap: 16px;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    min-height: 80px;
+    position: static;
+  }
+
+  .btn {
+    border: none;
+    border-radius: 100px;
+    font-family: 'Kanit', sans-serif;
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform 0.15s, box-shadow 0.15s;
+    white-space: nowrap;
+  }
+
+  .btn-yes {
+    background: linear-gradient(135deg, #ff6eb4, #ff3d9a);
+    color: white;
+    padding: 16px 40px;
+    font-size: 1.1rem;
+    box-shadow: 0 6px 24px rgba(255,60,150,0.4);
+    transition: all 0.4s cubic-bezier(0.34,1.56,0.64,1);
+  }
+
+  .btn-yes:hover {
+    transform: scale(1.05);
+    box-shadow: 0 8px 32px rgba(255,60,150,0.5);
+  }
+
+  .btn-yes:active { transform: scale(0.97); }
+
+  .btn-no {
+    background: rgba(200,200,220,0.4);
+    color: #888;
+    border: 2px solid rgba(180,180,200,0.5);
+    padding: 14px 32px;
+    font-size: 1rem;
+    transition: all 0.2s;
+  }
+
+  /* No button — moves away on hover */
+  .btn-no:hover { cursor: not-allowed; }
+
+  /* Win screen */
+  .win-screen {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .win-screen.show { display: flex; }
+  .question-area.hide { display: none; }
+
+  .win-emoji {
+    font-size: 4rem;
+    animation: pop 0.5s cubic-bezier(0.34,1.56,0.64,1) both;
+    margin-bottom: 12px;
+  }
+
+  @keyframes pop {
+    from { transform: scale(0); }
+    to   { transform: scale(1); }
+  }
+
+  .win-text {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: #c0407a;
+    margin-bottom: 8px;
+    animation: pop 0.5s 0.1s cubic-bezier(0.34,1.56,0.64,1) both;
+  }
+
+  .win-sub {
+    font-size: 1rem;
+    color: #d080a0;
+    animation: pop 0.5s 0.2s cubic-bezier(0.34,1.56,0.64,1) both;
+  }
+
+  /* No counter message */
+  .no-msg {
+    font-size: 0.85rem;
+    color: #e06090;
+    margin-top: 12px;
+    min-height: 22px;
+    font-weight: 400;
+    transition: opacity 0.3s;
+    animation: shake 0.4s ease;
+  }
+
+  @keyframes shake {
+    0%,100% { transform: translateX(0); }
+    25%      { transform: translateX(-6px); }
+    75%      { transform: translateX(6px); }
+  }
+
+  /* Size counter display */
+  .size-hint {
+    position: absolute;
+    bottom: -28px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 0.7rem;
+    color: #c080a0;
+    opacity: 0.6;
+    white-space: nowrap;
+  }
+</style>
+</head>
+<body>
+
+<!-- Floating hearts -->
+<div class="hearts-bg" id="heartsBg"></div>
+
+<div class="card" id="card">
+  <span class="cat" id="catEmoji">🐱</span>
+
+  <div class="question-area" id="questionArea">
+    <h1 class="question">จะเป็นแฟนฉันไหม? 💕</h1>
+    <p class="sub">คิดให้ดีนะ... ปุ่มนึงกดยากกว่าอีกอันมากเลย</p>
+
+    <div class="btn-group" id="btnGroup">
+      <button class="btn btn-yes" id="btnYes" onclick="sayYes()">
+        ตกลง 💖
+      </button>
+      <button class="btn btn-no" id="btnNo">
+        ปฏิเสธ
+      </button>
+    </div>
+
+    <div class="no-msg" id="noMsg"></div>
+  </div>
+
+  <div class="win-screen" id="winScreen">
+    <div class="win-emoji">🎉</div>
+    <div class="win-emoji" style="animation-delay:0.05s">💑</div>
+    <div class="win-text">ยินดีด้วย เราเป็นแฟนกันแล้ว!</div>
+    <div class="win-sub">รู้อยู่แล้วว่าจะตอบอะไร 😘</div>
+  </div>
+</div>
+
+<script>
+  // ===== Floating Hearts Background =====
+  const heartsContainer = document.getElementById('heartsBg');
+  const heartEmojis = ['🩷','💕','💗','💖','💝','✨','🌸','💞'];
+  function spawnHeart() {
+    const h = document.createElement('div');
+    h.className = 'heart-float';
+    h.textContent = heartEmojis[Math.floor(Math.random() * heartEmojis.length)];
+    h.style.left = Math.random() * 100 + 'vw';
+    const dur = 5 + Math.random() * 6;
+    h.style.animationDuration = dur + 's';
+    h.style.animationDelay = (Math.random() * 3) + 's';
+    h.style.fontSize = (1 + Math.random() * 1.5) + 'rem';
+    heartsContainer.appendChild(h);
+    setTimeout(() => h.remove(), (dur + 3) * 1000);
+  }
+  for (let i = 0; i < 12; i++) spawnHeart();
+  setInterval(spawnHeart, 800);
+
+  // ===== No Button Logic =====
+  let noCount = 0;
+  let yesSize = 1;
+
+  const btnNo  = document.getElementById('btnNo');
+  const btnYes = document.getElementById('btnYes');
+  const noMsg  = document.getElementById('noMsg');
+  const catEmoji = document.getElementById('catEmoji');
+
+  const messages = [
+    'โอ๊ย... อย่าเลยน้า 🥺',
+    'ลองกดอีกทีได้ไหม? 😿',
+    'หัวใจมันสลาย... 💔',
+    'แค่ให้โอกาสนิดนึงได้ไหม?',
+    'ฉันจะร้องนะ 😭',
+    'ปุ่มตกลงมันใหญ่กว่าแล้วนะ...',
+    'เดี๋ยวปุ่มตกลงจะกินหน้าจอแล้ว!',
+    'โอเค... ฉันยอมรับชะตา 💀',
+    'จริงๆ เหรอ?? 😤',
+    'ได้เลย ฉันรอนะ... ⏳',
+  ];
+
+  const cats = ['🐱','😿','🙀','😾','😿','🥺','😭','💔','🐱','🥺'];
+
+  function moveNoButton() {
+    const group = document.getElementById('btnGroup');
+    const rect  = group.getBoundingClientRect();
+    const cardRect = document.getElementById('card').getBoundingClientRect();
+
+    // Random position within card bounds
+    const maxX = cardRect.width  - btnNo.offsetWidth  - 32;
+    const maxY = cardRect.height - btnNo.offsetHeight - 32;
+
+    const newX = Math.random() * maxX;
+    const newY = Math.random() * maxY;
+
+    // Make no button absolutely positioned relative to card
+    if (btnNo.style.position !== 'absolute') {
+      btnNo.style.position = 'absolute';
+      document.getElementById('card').style.position = 'relative';
+      btnNo.style.zIndex = '20';
+    }
+
+    btnNo.style.left = newX + 'px';
+    btnNo.style.top  = newY + 'px';
+  }
+
+  // On hover — escape!
+  btnNo.addEventListener('mouseenter', moveNoButton);
+  btnNo.addEventListener('touchstart', (e) => {
+    e.preventDefault();
+    moveNoButton();
+    handleNoClick();
+  }, { passive: false });
+
+  // Click on no (only if somehow clicked on mobile)
+  btnNo.addEventListener('click', handleNoClick);
+
+  function handleNoClick() {
+    noCount++;
+    yesSize += 0.22;
+
+    // Grow yes button
+    btnYes.style.transform = `scale(${yesSize})`;
+    btnYes.style.transformOrigin = 'center';
+
+    // Update message
+    const msgIdx = Math.min(noCount - 1, messages.length - 1);
+    noMsg.style.animation = 'none';
+    noMsg.offsetHeight; // reflow
+    noMsg.style.animation = 'shake 0.4s ease';
+    noMsg.textContent = messages[msgIdx];
+
+    // Change cat
+    catEmoji.textContent = cats[Math.min(noCount - 1, cats.length - 1)];
+
+    // Shrink no button text
+    const newNoSize = Math.max(0.65, 1 - noCount * 0.06);
+    btnNo.style.fontSize = newNoSize + 'rem';
+    btnNo.style.padding = `${Math.max(6, 14 - noCount * 1.5)}px ${Math.max(14, 32 - noCount * 3)}px`;
+    btnNo.style.opacity = Math.max(0.25, 1 - noCount * 0.08);
+
+    // After many tries, hide no button entirely
+    if (noCount >= 10) {
+      btnNo.style.display = 'none';
+    }
+  }
+
+  function sayYes() {
+    document.getElementById('questionArea').classList.add('hide');
+    document.getElementById('winScreen').classList.add('show');
+    catEmoji.textContent = '😻';
+
+    // Burst of hearts
+    for (let i = 0; i < 20; i++) {
+      setTimeout(spawnHeart, i * 80);
+    }
+  }
+</script>
+</body>
+</html>
